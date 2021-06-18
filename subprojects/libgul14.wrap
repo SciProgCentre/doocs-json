@@ -1,0 +1,4 @@
+[wrap-git]
+directory = libgul14
+url = ssh://git@git.jetbrains.space/mipt-npm/controls/doocs-gul.git
+revision = master

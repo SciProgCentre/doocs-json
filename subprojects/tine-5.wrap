@@ -1,0 +1,4 @@
+[wrap-git]
+directory = tine-5
+url = ssh://git@git.jetbrains.space/mipt-npm/controls/doocs-tine.git
+revision = master
