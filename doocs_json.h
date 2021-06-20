@@ -5,11 +5,10 @@
 #ifndef BUILDDIR_DOOCS_JSON_H
 #define BUILDDIR_DOOCS_JSON_H
 
-#endif //BUILDDIR_DOOCS_JSON_H
+#endif  // BUILDDIR_DOOCS_JSON_H
 
 #include "doocs_json.cpp"
 
+__attribute__((unused)) json eq_data_to_json(EqData eqData);
 
-json eq_data_to_json(EqData eqData);
-
-EqData eq_data_from_json(json obj);
+__attribute__((unused)) EqData eq_data_from_json(json obj);

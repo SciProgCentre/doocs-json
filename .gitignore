@@ -1,4 +1,4 @@
 builddir/*
 subprojects/*
-
+.idea/
 !subprojects/*.wrap
