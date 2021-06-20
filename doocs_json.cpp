@@ -1,5 +1,8 @@
+#include <eq_adr.h>
+#include <eq_client.h>
 #include <eq_data.h>
 
+#include <iostream>
 #include <iterator>
 #include <nlohmann/json.hpp>
 #include <vector>
@@ -9,46 +12,50 @@
 constexpr const char *TYPE_KEY = "type";
 constexpr const char *TYPE_ID_KEY = "type_id";
 constexpr const char *VALUE_KEY = "value";
+constexpr const char *EVENT_ID_KEY = "event_id";
+constexpr const char *ERROR_KEY = "error";
+constexpr const char *TIME_KEY = "time";
+constexpr const char *COMMENT_KEY = "message";
 
 using namespace nlohmann;
 
-__attribute__((unused)) json eq_data_to_json(const EqData &eqData) {
+json eq_data_to_json(EqData *eqData) {
   json obj;
-  switch (eqData.type()) {
+  switch (eqData->type()) {
     case DATA_NULL:
       break;
     case DATA_BOOL:
       // booleans are encoded as ints, see
       // https://ttfinfo.desy.de/DOOCSWiki/Wiki.jsp?page=C%2B%2B%20Client%20Interface
-      obj[VALUE_KEY] = eqData.get_int();
+      obj[VALUE_KEY] = eqData->get_int();
       break;
     case DATA_SHORT:
-      obj[VALUE_KEY] = eqData.get_short();
+      obj[VALUE_KEY] = eqData->get_short();
       break;
     case DATA_USHORT:
-      obj[VALUE_KEY] = eqData.get_ushort();
+      obj[VALUE_KEY] = eqData->get_ushort();
       break;
     case DATA_INT:
-      obj[VALUE_KEY] = eqData.get_int();
+      obj[VALUE_KEY] = eqData->get_int();
       break;
     case DATA_UINT:
-      obj[VALUE_KEY] = eqData.get_uint();
+      obj[VALUE_KEY] = eqData->get_uint();
       break;
     case DATA_LONG:
-      obj[VALUE_KEY] = eqData.get_long();
+      obj[VALUE_KEY] = eqData->get_long();
       break;
     case DATA_ULONG:
-      obj[VALUE_KEY] = eqData.get_ulong();
+      obj[VALUE_KEY] = eqData->get_ulong();
       break;
     case DATA_FLOAT:
-      obj[VALUE_KEY] = eqData.get_float();
+      obj[VALUE_KEY] = eqData->get_float();
       break;
     case DATA_DOUBLE:
-      obj[VALUE_KEY] = eqData.get_double();
+      obj[VALUE_KEY] = eqData->get_double();
       break;
     case DATA_A_BOOL: {
       std::vector<bool> boolean_vector;
-      for (int *pointer = eqData.get_int_array(); *pointer != 0; ++pointer) {
+      for (int *pointer = eqData->get_int_array(); *pointer != 0; ++pointer) {
         boolean_vector.push_back((bool)*pointer);
       }
       obj[VALUE_KEY] = boolean_vector;
@@ -56,7 +63,7 @@ __attribute__((unused)) json eq_data_to_json(const EqData &eqData) {
     }
     case DATA_A_SHORT: {
       std::vector<short> short_vector;
-      for (short *pointer = eqData.get_short_array(); *pointer != 0;
+      for (short *pointer = eqData->get_short_array(); *pointer != 0;
            ++pointer) {
         short_vector.push_back(*pointer);
       }
@@ -65,7 +72,7 @@ __attribute__((unused)) json eq_data_to_json(const EqData &eqData) {
     }
     case DATA_A_USHORT: {
       std::vector<ushort> ushort_vector;
-      for (ushort *pointer = eqData.get_ushort_array(); *pointer != 0;
+      for (ushort *pointer = eqData->get_ushort_array(); *pointer != 0;
            ++pointer) {
         ushort_vector.push_back(*pointer);
       }
@@ -74,7 +81,7 @@ __attribute__((unused)) json eq_data_to_json(const EqData &eqData) {
     }
     case DATA_A_INT: {
       std::vector<int> int_vector;
-      for (int *pointer = eqData.get_int_array(); *pointer != 0; ++pointer) {
+      for (int *pointer = eqData->get_int_array(); *pointer != 0; ++pointer) {
         int_vector.push_back(*pointer);
       }
       obj[VALUE_KEY] = int_vector;
@@ -82,7 +89,7 @@ __attribute__((unused)) json eq_data_to_json(const EqData &eqData) {
     }
     case DATA_A_UINT: {
       std::vector<uint> uint_vector;
-      for (uint *pointer = eqData.get_uint_array(); *pointer != 0; ++pointer) {
+      for (uint *pointer = eqData->get_uint_array(); *pointer != 0; ++pointer) {
         uint_vector.push_back(*pointer);
       }
       obj[VALUE_KEY] = uint_vector;
@@ -90,7 +97,7 @@ __attribute__((unused)) json eq_data_to_json(const EqData &eqData) {
     }
     case DATA_A_LONG: {
       std::vector<long long> long_vector;
-      for (long long *pointer = eqData.get_long_array(); *pointer != 0;
+      for (long long *pointer = eqData->get_long_array(); *pointer != 0;
            ++pointer) {
         long_vector.push_back(*pointer);
       }
@@ -99,7 +106,7 @@ __attribute__((unused)) json eq_data_to_json(const EqData &eqData) {
     }
     case DATA_A_ULONG: {
       std::vector<unsigned long long> ulong_vector;
-      for (unsigned long long *pointer = eqData.get_ulong_array();
+      for (unsigned long long *pointer = eqData->get_ulong_array();
            *pointer != 0; ++pointer) {
         ulong_vector.push_back(*pointer);
       }
@@ -108,7 +115,7 @@ __attribute__((unused)) json eq_data_to_json(const EqData &eqData) {
     }
     case DATA_A_FLOAT: {
       std::vector<float> float_vector;
-      for (float *pointer = eqData.get_float_array(); *pointer != 0;
+      for (float *pointer = eqData->get_float_array(); *pointer != 0;
            ++pointer) {
         float_vector.push_back(*pointer);
       }
@@ -117,7 +124,8 @@ __attribute__((unused)) json eq_data_to_json(const EqData &eqData) {
     }
     case DATA_A_DOUBLE: {
       std::vector<double> double_vector;
-      for (auto pointer = eqData.get_double_array(); *pointer != 0; ++pointer) {
+      for (auto pointer = eqData->get_double_array(); *pointer != 0;
+           ++pointer) {
         double_vector.push_back(*pointer);
       }
       obj[VALUE_KEY] = double_vector;
@@ -126,7 +134,7 @@ __attribute__((unused)) json eq_data_to_json(const EqData &eqData) {
     case DATA_TEXT:
     case DATA_STRING:
     case DATA_STRING16: {
-      obj[VALUE_KEY] = eqData.get_string();
+      obj[VALUE_KEY] = eqData->get_string();
       break;
     }
 
@@ -148,19 +156,19 @@ __attribute__((unused)) json eq_data_to_json(const EqData &eqData) {
       //            break;
       //        }
     default:
-      obj[VALUE_KEY] = eqData.get_string();
-      obj["message"] = "Not implemented converter";
+      obj[VALUE_KEY] = eqData->get_string();
+      obj[COMMENT_KEY] = "Not implemented converter";
   }
-  obj[TYPE_ID_KEY] = eqData.type();
-  obj[TYPE_KEY] = eqData.type_string();
+  obj[TYPE_ID_KEY] = eqData->type();
+  obj[TYPE_KEY] = eqData->type_string();
 
-  obj["event_id"] = eqData.get_event_id().to_int();
-  obj["error"] = eqData.error();
-  obj["time"] = eqData.time();
+  obj[EVENT_ID_KEY] = eqData->get_event_id().to_int();
+  obj[ERROR_KEY] = eqData->error();
+  obj[TIME_KEY] = eqData->time();
   return obj;
 }
 
-__attribute__((unused)) EqData *eq_data_from_json(json obj) {
+EqData *eq_data_from_json(json obj) {
   int value_type = obj[TYPE_ID_KEY];
   auto *data = new EqData();
   switch (value_type) {
@@ -261,15 +269,72 @@ __attribute__((unused)) EqData *eq_data_from_json(json obj) {
       data->set(obj[VALUE_KEY].get<std::string>());
     }
   }
+
   data->set_type(value_type);
+
+  auto time_value = obj[TIME_KEY];
+  if (!time_value.is_null()) {
+    data->time(time_value.get<time_t>());
+  }
+
+  auto error_value = obj[ERROR_KEY];
+  if (!error_value.is_null()) {
+    data->error(error_value.get<int>());
+  }
+
+  auto event_id_value = obj[EVENT_ID_KEY];
+  if (!event_id_value.is_null()) {
+    data->set_event_id(doocs::EventId(event_id_value.get<int64_t>()));
+  }
+
   return data;
 }
 
-// int main(int argc, char **argv) {
-//     if (argc != 1) {
-//         std::cout << argv[0] << "takes no arguments.\n";
-//         return 1;
-//     }
-//     std::cout << "This is project " << PROJECT_NAME << ".\n";
-//     return 0;
-// }
+/**
+ *
+ *
+ */
+json get_property(std::string address, json data) {
+  EqCall eq;
+  EqAdr ea;
+  EqData *src = eq_data_from_json(data);
+  EqData dst;
+
+  ea.adr(address);
+
+  // Make the call
+  int return_code = eq.get(&ea, src, &dst);
+
+  delete src;
+
+  return eq_data_to_json(&dst);
+}
+
+json set_property(std::string address, json data) {
+  EqCall eq;
+  EqAdr ea;
+  EqData *src = eq_data_from_json(data);
+  EqData dst;
+
+  ea.adr(address);
+
+  // Make the call
+  int return_code = eq.set(&ea, src, &dst);
+
+  delete src;
+
+  return eq_data_to_json(&dst);
+}
+
+json respond_magix(json magix) {
+  std::string address = magix["eq_address"].get<std::string>();
+  std::string action = magix["action"].get<std::string>();
+  json data = magix["eq_data"];
+  if (action == "get") {
+    return get_property(address, data);
+  } else if (action == "set") {
+    return set_property(address, data);
+  } else {
+    throw std::invalid_argument( "Unhandled action" );
+  }
+}

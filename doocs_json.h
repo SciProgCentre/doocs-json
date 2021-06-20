@@ -9,6 +9,17 @@
 
 #include "doocs_json.cpp"
 
-__attribute__((unused)) json eq_data_to_json(EqData eqData);
+/**
+ * Convert given DOOCS EqData to a json representation
+ * @param eqData
+ * @return
+ */
+json eq_data_to_json(EqData eqData);
 
-__attribute__((unused)) EqData eq_data_from_json(json obj);
+/**
+ * Convert json to DOOCS EqData
+ * @param obj
+ * @return
+ */
+EqData *eq_data_from_json(json obj);
+
