@@ -1,0 +1,4 @@
+[wrap-git]
+directory = zmqpp
+url = https://github.com/zeromq/zmqpp.git
+revision = master

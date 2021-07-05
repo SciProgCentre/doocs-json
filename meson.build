@@ -4,12 +4,33 @@ project('doocs-json', 'cpp',
                      'cpp_std=c++14'])
 
 doocsapi_dep = dependency('doocs-doocsapi', fallback : [ 'doocs-clientlib', 'doocsapi_dep' ])
+
 nlohmann_json_dep = dependency('nlohmann_json', version : '3.9.1', fallback : ['nlohmann_json', 'nlohmann_json_dep'])
 
-exe = executable(
-  'doocs_json', 'doocs_json.cpp',
+# rsocket dependency
+cmake = import('cmake')
+
+#rsocket_sub_project = cmake.subproject('rsocket')
+#rsocket_dep = rsocket_sub_project.dependency('ReactiveSocket')
+
+# zmq_sub_project = cmake.subproject('zmqpp')
+zmqpp_dep = dependency('libzmqpp') #zmq_sub_project.dependency('zmqpp')
+
+include_dir = include_directories('include')
+
+sources = ['src/doocs_json.cpp','src/doocs_rsocket.cpp', 'src/doocs_zmq.cpp']
+
+
+exe = static_library(
+  'doocs_json', sources,
+  include_directories : include_dir,
   install : true, 
-  dependencies : [doocsapi_dep, nlohmann_json_dep]
+  dependencies : [
+    doocsapi_dep, 
+    nlohmann_json_dep,
+#    rsocket_dep,
+    zmqpp_dep,
+    ]
 )
 
-test('basic', exe)
+#test('basic', exe)

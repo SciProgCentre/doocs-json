@@ -1,10 +1,9 @@
+#include "doocs_json.h"
+
 #include <eq_adr.h>
 #include <eq_client.h>
-#include <eq_data.h>
 
 #include <iostream>
-#include <iterator>
-#include <nlohmann/json.hpp>
 #include <vector>
 
 #define PROJECT_NAME "doocs-json"
@@ -294,7 +293,7 @@ EqData *eq_data_from_json(json obj) {
  *
  *
  */
-json get_property(std::string address, json data) {
+json get_property(const std::string &address, json data) {
   EqCall eq;
   EqAdr ea;
   EqData *src = eq_data_from_json(data);
@@ -305,15 +304,19 @@ json get_property(std::string address, json data) {
   // Make the call
   int return_code = eq.get(&ea, src, &dst);
 
+  if (return_code != 0) {
+    std::cerr << "Get failed with code " << return_code;
+  }
+
   delete src;
 
   return eq_data_to_json(&dst);
 }
 
-json set_property(std::string address, json data) {
+json set_property(const std::string &address, json data) {
   EqCall eq;
   EqAdr ea;
-  EqData *src = eq_data_from_json(data);
+  EqData *src = eq_data_from_json(std::move(data));
   EqData dst;
 
   ea.adr(address);
@@ -321,20 +324,48 @@ json set_property(std::string address, json data) {
   // Make the call
   int return_code = eq.set(&ea, src, &dst);
 
+  if (return_code != 0) {
+    std::cerr << "Get failed with code " << return_code;
+  }
+
   delete src;
 
   return eq_data_to_json(&dst);
 }
 
-json respond_magix(json magix) {
-  std::string address = magix["eq_address"].get<std::string>();
-  std::string action = magix["action"].get<std::string>();
-  json data = magix["eq_data"];
+/*
+  "id":"string|number[optional, but desired]",
+  "parentId": "string|number[optional]",
+  "target":"string[optional]",
+  "origin":"string[required]",
+  "user":"object[optional]",
+  "payload":"object[optional]"
+*/
+
+/**
+ * Make a response to a magix message with DOOCS payload according to
+ * https://github.com/waltz-controls/rfc/blob/master/5/readme.md
+ *
+ */
+json respond_magix(json request, const std::string &endpoint_name) {
+  json payload = request["payload"];
+  std::string address = payload["eq_address"].get<std::string>();
+  std::string action = payload["action"].get<std::string>();
+  json data = payload["eq_data"];
+  json responsePayload;
   if (action == "get") {
-    return get_property(address, data);
+    responsePayload = get_property(address, data);
   } else if (action == "set") {
-    return set_property(address, data);
+    responsePayload = set_property(address, data);
   } else {
-    throw std::invalid_argument( "Unhandled action" );
+    throw std::invalid_argument("Unhandled action");
   }
+  json response;
+
+  response["parentId"] = request["id"];
+  response["target"] = request["origin"];
+  response["origin"] = endpoint_name;
+  response["payload"] = responsePayload;
+  response["user"] = request["user"];
+  return response;
 }

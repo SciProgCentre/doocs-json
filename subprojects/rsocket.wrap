@@ -1,0 +1,4 @@
+[wrap-git]
+directory = rsocket
+url = https://github.com/rsocket/rsocket-cpp.git
+revision = master
