@@ -7,21 +7,19 @@
 #ifndef BUILDDIR_DOOCS_JSON_H
 #define BUILDDIR_DOOCS_JSON_H
 
-#endif  // BUILDDIR_DOOCS_JSON_H
-
 /**
  * Convert given DOOCS EqData to a json representation
  * @param eqData
  * @return
  */
-nlohmann::json eq_data_to_json(EqData eqData);
+nlohmann::json eq_data_to_json(const EqData& eqData);
 
 /**
  * Convert json to DOOCS EqData
  * @param obj
  * @return
  */
-EqData *eq_data_from_json(nlohmann::json obj);
+std::unique_ptr<EqData> eq_data_from_json(const nlohmann::json& obj);
 
 /**
  * Make a response to a magix message with DOOCS payload according to
@@ -29,3 +27,9 @@ EqData *eq_data_from_json(nlohmann::json obj);
  *
  */
 nlohmann::json respond_magix(nlohmann::json request, const std::string& endpoint_name = "doocs");
+
+nlohmann::json get_property(const std::string &address, const nlohmann::json& data = nullptr);
+nlohmann::json set_property(const std::string &address, const nlohmann::json& data = nullptr);
+nlohmann::json list_names(const std::string &address);
+
+#endif  // BUILDDIR_DOOCS_JSON_H

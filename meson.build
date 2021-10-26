@@ -17,8 +17,8 @@ cmake = import('cmake')
 #rsocket_sub_project = cmake.subproject('rsocket')
 #rsocket_dep = rsocket_sub_project.dependency('ReactiveSocket')
 
-# zmq_sub_project = cmake.subproject('zmqpp')
-zmqpp_dep = dependency('libzmqpp') #zmq_sub_project.dependency('zmqpp')
+zmq_dep = meson.get_compiler('cpp').find_library('libzmq')
+zmqpp_dep = meson.get_compiler('cpp').find_library('libzmqpp')
 
 include_dir = include_directories('include')
 
@@ -33,6 +33,7 @@ lib = static_library(
     nlohmann_json_dep,
 #    rsocket_dep,
     zmqpp_dep,
+    zmq_dep,
     ]
 )
 
@@ -45,7 +46,23 @@ zmq_exe = executable(
     doocsapi_dep,
     nlohmann_json_dep,
     zmqpp_dep,
+    zmq_dep,
     ]
+)
+
+json_exe = executable(
+  'doocs_json_app',
+  [
+   'src/doocs_json.cpp',
+   'src/doocs_json_app.cpp',
+   'test/doocs_json_test.cpp',
+   ],
+  include_directories : include_dir,
+  install : true,
+  dependencies : [
+    doocsapi_dep,
+    nlohmann_json_dep,
+  ]
 )
 
 #test('basic', exe)

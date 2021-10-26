@@ -6,8 +6,6 @@
 #include <iostream>
 #include <vector>
 
-#define PROJECT_NAME "doocs-json"
-
 constexpr const char *TYPE_KEY = "type";
 constexpr const char *TYPE_ID_KEY = "type_id";
 constexpr const char *VALUE_KEY = "value";
@@ -18,158 +16,147 @@ constexpr const char *COMMENT_KEY = "message";
 
 using namespace nlohmann;
 
-json eq_data_to_json(EqData *eqData) {
+json eq_data_to_json(const EqData &eqData) {
   json obj;
-  switch (eqData->type()) {
+  switch (eqData.type()) {
     case DATA_NULL:
       break;
     case DATA_BOOL:
       // booleans are encoded as ints, see
       // https://ttfinfo.desy.de/DOOCSWiki/Wiki.jsp?page=C%2B%2B%20Client%20Interface
-      obj[VALUE_KEY] = eqData->get_int();
+      obj[VALUE_KEY] = bool(eqData.get_int());
       break;
     case DATA_SHORT:
-      obj[VALUE_KEY] = eqData->get_short();
+      obj[VALUE_KEY] = eqData.get_short();
       break;
     case DATA_USHORT:
-      obj[VALUE_KEY] = eqData->get_ushort();
+      obj[VALUE_KEY] = eqData.get_ushort();
       break;
     case DATA_INT:
-      obj[VALUE_KEY] = eqData->get_int();
+      obj[VALUE_KEY] = eqData.get_int();
       break;
     case DATA_UINT:
-      obj[VALUE_KEY] = eqData->get_uint();
+      obj[VALUE_KEY] = eqData.get_uint();
       break;
     case DATA_LONG:
-      obj[VALUE_KEY] = eqData->get_long();
+      obj[VALUE_KEY] = eqData.get_long();
       break;
     case DATA_ULONG:
-      obj[VALUE_KEY] = eqData->get_ulong();
+      obj[VALUE_KEY] = eqData.get_ulong();
       break;
     case DATA_FLOAT:
-      obj[VALUE_KEY] = eqData->get_float();
+      obj[VALUE_KEY] = eqData.get_float();
       break;
     case DATA_DOUBLE:
-      obj[VALUE_KEY] = eqData->get_double();
+      obj[VALUE_KEY] = eqData.get_double();
       break;
     case DATA_A_BOOL: {
-      std::vector<bool> boolean_vector;
-      for (int *pointer = eqData->get_int_array(); *pointer != 0; ++pointer) {
-        boolean_vector.push_back((bool)*pointer);
+      int len = eqData.array_length();
+      std::vector<bool> boolean_vector(len);
+      for (int i = 0; i < len; i++) {
+        boolean_vector[i] = eqData.get_int(i);
       }
       obj[VALUE_KEY] = boolean_vector;
       break;
     }
     case DATA_A_SHORT: {
-      std::vector<short> short_vector;
-      for (short *pointer = eqData->get_short_array(); *pointer != 0;
-           ++pointer) {
-        short_vector.push_back(*pointer);
-      }
+      short* pointer = eqData.get_short_array();
+      int len = eqData.array_length();
+      std::vector<short> short_vector(pointer, pointer + len);
       obj[VALUE_KEY] = short_vector;
       break;
     }
     case DATA_A_USHORT: {
-      std::vector<ushort> ushort_vector;
-      for (ushort *pointer = eqData->get_ushort_array(); *pointer != 0;
-           ++pointer) {
-        ushort_vector.push_back(*pointer);
-      }
+      ushort* pointer = eqData.get_ushort_array();
+      int len = eqData.array_length();
+      std::vector<short> ushort_vector(pointer, pointer + len);
       obj[VALUE_KEY] = ushort_vector;
       break;
     }
     case DATA_A_INT: {
-      std::vector<int> int_vector;
-      for (int *pointer = eqData->get_int_array(); *pointer != 0; ++pointer) {
-        int_vector.push_back(*pointer);
-      }
+      int* pointer = eqData.get_int_array();
+      int len = eqData.array_length();
+      std::vector<int> int_vector(pointer, pointer + len);
       obj[VALUE_KEY] = int_vector;
       break;
     }
     case DATA_A_UINT: {
-      std::vector<uint> uint_vector;
-      for (uint *pointer = eqData->get_uint_array(); *pointer != 0; ++pointer) {
-        uint_vector.push_back(*pointer);
-      }
+      uint* pointer = eqData.get_uint_array();
+      int len = eqData.array_length();
+      std::vector<uint> uint_vector(pointer, pointer + len);
       obj[VALUE_KEY] = uint_vector;
       break;
     }
     case DATA_A_LONG: {
-      std::vector<long long> long_vector;
-      for (long long *pointer = eqData->get_long_array(); *pointer != 0;
-           ++pointer) {
-        long_vector.push_back(*pointer);
-      }
+      long long* pointer = eqData.get_long_array();
+      int len = eqData.array_length();
+      std::vector<long long> long_vector(pointer, pointer + len);
       obj[VALUE_KEY] = long_vector;
       break;
     }
     case DATA_A_ULONG: {
-      std::vector<unsigned long long> ulong_vector;
-      for (unsigned long long *pointer = eqData->get_ulong_array();
-           *pointer != 0; ++pointer) {
-        ulong_vector.push_back(*pointer);
-      }
+      unsigned long long* pointer = eqData.get_ulong_array();
+      int len = eqData.array_length();
+      std::vector<unsigned long long> ulong_vector(pointer, pointer + len);
       obj[VALUE_KEY] = ulong_vector;
       break;
     }
     case DATA_A_FLOAT: {
-      std::vector<float> float_vector;
-      for (float *pointer = eqData->get_float_array(); *pointer != 0;
-           ++pointer) {
-        float_vector.push_back(*pointer);
-      }
+      float* pointer = eqData.get_float_array();
+      int len = eqData.array_length();
+      std::vector<float> float_vector(pointer, pointer + len);
       obj[VALUE_KEY] = float_vector;
       break;
     }
     case DATA_A_DOUBLE: {
-      std::vector<double> double_vector;
-      for (auto pointer = eqData->get_double_array(); *pointer != 0;
-           ++pointer) {
-        double_vector.push_back(*pointer);
-      }
+      double* pointer = eqData.get_double_array();
+      int len = eqData.array_length();
+      std::vector<double> double_vector(pointer, pointer + len);
       obj[VALUE_KEY] = double_vector;
       break;
     }
     case DATA_TEXT:
-    case DATA_STRING:
-    case DATA_STRING16: {
-      obj[VALUE_KEY] = eqData->get_string();
+    case DATA_STRING: {
+      obj[VALUE_KEY] = eqData.get_string();
       break;
     }
-
-      /*
-       * int i1_data
-       * float f1_data
-       * float f2_data
-       * time_t tm
-       * char str_data<>
-       */
-      //        case DATA_USTR: {
-      //            obj[TYPE_KEY] = "Ustr";
-      //            USTR* ustr = eqData.get_ustr(0)
-      //            obj[VALUE_KEY + "i1"] = * ustr.i1_data;
-      //            obj[VALUE_KEY + "f1"] = ustr.f1_data;
-      //            obj[VALUE_KEY + "f2"] = ustr.f2_data;
-      //            obj[VALUE_KEY + "tm"] = ustr.tm;
-      //            obj[VALUE_KEY + "str"] = ustr.str_data;
-      //            break;
-      //        }
+    case DATA_A_USTR: {
+      int len = eqData.array_length();
+      std::vector<json> ustr_vector(len);
+      for (int i = 0; i < len; i++) {
+        USTR *ustr = eqData.get_ustr(i);
+        ustr_vector[i]["i1"] = ustr->i1_data;
+        ustr_vector[i]["f1"] = ustr->f1_data;
+        ustr_vector[i]["f2"] = ustr->f2_data;
+        ustr_vector[i]["tm"] = ustr->tm;
+        ustr_vector[i]["data"] = std::string(
+            ustr->str_data.str_data_val,
+            ustr->str_data.str_data_len - 1
+        );
+      }
+      obj[VALUE_KEY] = ustr_vector;
+      break;
+    }
     default:
-      obj[VALUE_KEY] = eqData->get_string();
+      obj[VALUE_KEY] = eqData.get_string();
       obj[COMMENT_KEY] = "Not implemented converter";
   }
-  obj[TYPE_ID_KEY] = eqData->type();
-  obj[TYPE_KEY] = eqData->type_string();
+  obj[TYPE_ID_KEY] = eqData.type();
+  obj[TYPE_KEY] = eqData.type_string();
 
-  obj[EVENT_ID_KEY] = eqData->get_event_id().to_int();
-  obj[ERROR_KEY] = eqData->error();
-  obj[TIME_KEY] = eqData->time();
+  obj[EVENT_ID_KEY] = eqData.get_event_id().to_int();
+  obj[ERROR_KEY] = eqData.error();
+  obj[TIME_KEY] = eqData.time();
   return obj;
 }
 
-EqData *eq_data_from_json(json obj) {
+std::unique_ptr<EqData> eq_data_from_json(const json &obj) {
+  auto data = std::make_unique<EqData>();
+  if (obj.empty()) {
+    return data;
+  }
   int value_type = obj[TYPE_ID_KEY];
-  auto *data = new EqData();
+  data->set_type(value_type);
   switch (value_type) {
     case DATA_BOOL:
       data->set(obj[VALUE_KEY].get<bool>());
@@ -199,69 +186,107 @@ EqData *eq_data_from_json(json obj) {
       data->set(obj[VALUE_KEY].get<double>());
       break;
     case DATA_A_BOOL: {
-      data->set(obj[VALUE_KEY].get<double>());
+      auto vector = obj[VALUE_KEY].get<std::vector<bool>>();
+      int len = int(vector.size());
+      for (int i = 0; i < len; i++) {
+        data->set(vector[i], i);
+      }
+      data->length(len);
       break;
     }
     case DATA_A_SHORT: {
       auto vector = obj[VALUE_KEY].get<std::vector<short>>();
-      for (int i = 0; i < int(vector.size()); i++) {
+      int len = int(vector.size());
+      for (int i = 0; i < len; i++) {
         data->set(vector[i], i);
       }
+      data->length(len);
       break;
     }
     case DATA_A_USHORT: {
       auto vector = obj[VALUE_KEY].get<std::vector<ushort>>();
-      for (int i = 0; i < int(vector.size()); i++) {
+      int len = int(vector.size());
+      for (int i = 0; i < len; i++) {
         data->set(vector[i], i);
       }
+      data->length(len);
       break;
     }
     case DATA_A_INT: {
       auto vector = obj[VALUE_KEY].get<std::vector<int>>();
-      for (int i = 0; i < int(vector.size()); i++) {
+      int len = int(vector.size());
+      for (int i = 0; i < len; i++) {
         data->set(vector[i], i);
       }
+      data->length(len);
       break;
     }
     case DATA_A_UINT: {
       auto vector = obj[VALUE_KEY].get<std::vector<uint>>();
-      for (int i = 0; i < int(vector.size()); i++) {
+      int len = int(vector.size());
+      for (int i = 0; i < len; i++) {
         data->set(vector[i], i);
       }
+      data->length(len);
       break;
     }
     case DATA_A_LONG: {
       auto vector = obj[VALUE_KEY].get<std::vector<long long>>();
-      for (int i = 0; i < int(vector.size()); i++) {
+      int len = int(vector.size());
+      for (int i = 0; i < len; i++) {
         data->set(vector[i], i);
       }
+      data->length(len);
       break;
     }
     case DATA_A_ULONG: {
       auto vector = obj[VALUE_KEY].get<std::vector<unsigned long long>>();
-      for (int i = 0; i < int(vector.size()); i++) {
+      int len = int(vector.size());
+      for (int i = 0; i < len; i++) {
         data->set(vector[i], i);
       }
+      data->length(len);
       break;
     }
     case DATA_A_FLOAT: {
       auto vector = obj[VALUE_KEY].get<std::vector<float>>();
-      for (int i = 0; i < int(vector.size()); i++) {
+      int len = int(vector.size());
+      for (int i = 0; i < len; i++) {
         data->set(vector[i], i);
       }
+      data->length(len);
       break;
     }
     case DATA_A_DOUBLE: {
       auto vector = obj[VALUE_KEY].get<std::vector<double>>();
-      for (int i = 0; i < int(vector.size()); i++) {
+      int len = int(vector.size());
+      for (int i = 0; i < len; i++) {
         data->set(vector[i], i);
       }
+      data->length(len);
       break;
     }
     case DATA_TEXT:
-    case DATA_STRING:
-    case DATA_STRING16: {
+    case DATA_STRING: {
       data->set(obj[VALUE_KEY].get<std::string>());
+      break;
+    }
+    case DATA_A_USTR: {
+      auto vector = obj[VALUE_KEY].get<std::vector<json>>();
+      int len = int(vector.size());
+      for (int i = 0; i < len; i++) {
+        USTR ustr;
+        ustr.i1_data = vector[i]["i1"].get<int>();
+        ustr.f1_data = vector[i]["f1"].get<float>();
+        ustr.f2_data = vector[i]["f2"].get<float>();
+        ustr.tm = vector[i]["tm"].get<time_t>();
+
+        std::string str = vector[i]["data"].get<std::string>();
+        ustr.str_data.str_data_len = str.size() + 1;
+        ustr.str_data.str_data_val = const_cast<char*>(str.c_str());
+        data->set(ustr, i);
+      }
+      data->length(len);
       break;
     }
     default: {
@@ -269,68 +294,67 @@ EqData *eq_data_from_json(json obj) {
     }
   }
 
-  data->set_type(value_type);
-
-  auto time_value = obj[TIME_KEY];
-  if (!time_value.is_null()) {
-    data->time(time_value.get<time_t>());
+  if (obj.contains(TIME_KEY)) {
+    data->time(obj[TIME_KEY].get<time_t>());
   }
 
-  auto error_value = obj[ERROR_KEY];
-  if (!error_value.is_null()) {
-    data->error(error_value.get<int>());
+
+  if (obj.contains(ERROR_KEY)) {
+    data->error(obj[ERROR_KEY].get<int>());
   }
 
-  auto event_id_value = obj[EVENT_ID_KEY];
-  if (!event_id_value.is_null()) {
-    data->set_event_id(doocs::EventId(event_id_value.get<int64_t>()));
+  if (obj.contains(EVENT_ID_KEY)) {
+    data->set_event_id(doocs::EventId(obj[EVENT_ID_KEY].get<int64_t>()));
   }
 
   return data;
 }
 
-/**
- *
- *
- */
-json get_property(const std::string &address, json data) {
+json list_names(const std::string &address) {
   EqCall eq;
-  EqAdr ea;
-  EqData *src = eq_data_from_json(data);
+  EqAdr ea(address);
   EqData dst;
 
-  ea.adr(address);
-
   // Make the call
-  int return_code = eq.get(&ea, src, &dst);
+  int return_code = eq.names(&ea, &dst);
 
   if (return_code != 0) {
-    std::cerr << "Get failed with code " << return_code;
+    std::cerr << "Names failed with code " << return_code << std::endl;
   }
 
-  delete src;
-
-  return eq_data_to_json(&dst);
+  return eq_data_to_json(dst);
 }
 
-json set_property(const std::string &address, json data) {
+json get_property(const std::string &address, const json &data) {
   EqCall eq;
-  EqAdr ea;
-  EqData *src = eq_data_from_json(std::move(data));
+  EqAdr ea(address);
+  auto src = eq_data_from_json(data);
   EqData dst;
 
-  ea.adr(address);
-
   // Make the call
-  int return_code = eq.set(&ea, src, &dst);
+  int return_code = eq.get(&ea, src.get(), &dst);
 
   if (return_code != 0) {
-    std::cerr << "Get failed with code " << return_code;
+    std::cerr << "Get failed with code " << return_code << std::endl;
   }
 
-  delete src;
+  return eq_data_to_json(dst);
+}
 
-  return eq_data_to_json(&dst);
+json set_property(const std::string &address, const json &data) {
+  EqCall eq;
+  EqAdr ea(address);
+  auto src = eq_data_from_json(data);
+  EqData dst;
+
+  // Make the call
+  int return_code = eq.set(&ea, src.get(), &dst);
+
+  if (return_code != 0) {
+    std::cerr << "Set failed with code " << return_code;
+  }
+
+  return eq_data_to_json(dst);
 }
 
 /*
