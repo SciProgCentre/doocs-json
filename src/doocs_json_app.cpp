@@ -1,7 +1,6 @@
 #include <iostream>
 
 #include "doocs_json.h"
-#include "doocs_json_test.h"
 
 void print_usage() {
   std::cerr << "usage: doocs_json_app get "
@@ -9,9 +8,6 @@ void print_usage() {
             << std::endl
             << "or     doocs_json_app names "
             << "doocs://host:rpcnum/facility/device/location/*"
-            << std::endl
-            << "or     doocs_json_app test "
-            << "doocs://host:rpcnum/facility/device"
             << std::endl;
 }
 
@@ -29,8 +25,6 @@ int main(int argc, char *argv[]) {
               << std::endl;
   } else if (cmd == "names") {
     std::cout << list_names(argv[2]) << std::endl;
-  } else if (cmd == "test") {
-    test_all(argv[2]);
   } else {
     print_usage();
     return -1;

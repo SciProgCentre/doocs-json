@@ -11,6 +11,8 @@ doocsapi_dep = dependency('doocs-doocsapi', fallback : [ 'doocs-clientlib', 'doo
 # use nlohmann-json3-dev on Ubuntu
 nlohmann_json_dep = dependency('nlohmann_json', fallback : ['nlohmann_json', 'nlohmann_json_dep'])
 
+gtest_dep = dependency('gtest', main : false)
+
 # rsocket dependency
 cmake = import('cmake')
 
@@ -34,7 +36,7 @@ lib = static_library(
 #    rsocket_dep,
     zmqpp_dep,
     zmq_dep,
-    ]
+   ]
 )
 
 zmq_exe = executable(
@@ -47,7 +49,7 @@ zmq_exe = executable(
     nlohmann_json_dep,
     zmqpp_dep,
     zmq_dep,
-    ]
+   ]
 )
 
 json_exe = executable(
@@ -55,8 +57,7 @@ json_exe = executable(
   [
    'src/doocs_json.cpp',
    'src/doocs_json_app.cpp',
-   'test/doocs_json_test.cpp',
-   ],
+  ],
   include_directories : include_dir,
   install : true,
   dependencies : [
@@ -65,4 +66,17 @@ json_exe = executable(
   ]
 )
 
-#test('basic', exe)
+json_test = executable(
+  'doocs_json_test',
+  [
+   'src/doocs_json.cpp',
+   'test/json_test_local.cpp',
+   'test/json_test_remote.cpp',
+  ],
+  include_directories : include_dir,
+  dependencies : [
+    doocsapi_dep,
+    nlohmann_json_dep,
+    gtest_dep,
+  ]
+)

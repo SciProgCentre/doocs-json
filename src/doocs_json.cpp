@@ -69,7 +69,7 @@ json eq_data_to_json(const EqData &eqData) {
     case DATA_A_USHORT: {
       ushort* pointer = eqData.get_ushort_array();
       int len = eqData.array_length();
-      std::vector<short> ushort_vector(pointer, pointer + len);
+      std::vector<unsigned short> ushort_vector(pointer, pointer + len);
       obj[VALUE_KEY] = ushort_vector;
       break;
     }
@@ -159,7 +159,7 @@ std::unique_ptr<EqData> eq_data_from_json(const json &obj) {
   data->set_type(value_type);
   switch (value_type) {
     case DATA_BOOL:
-      data->set(obj[VALUE_KEY].get<bool>());
+      data->set_bool(obj[VALUE_KEY].get<bool>());
       break;
     case DATA_SHORT:
       data->set(obj[VALUE_KEY].get<short>());
@@ -281,7 +281,7 @@ std::unique_ptr<EqData> eq_data_from_json(const json &obj) {
         ustr.f2_data = vector[i]["f2"].get<float>();
         ustr.tm = vector[i]["tm"].get<time_t>();
 
-        std::string str = vector[i]["data"].get<std::string>();
+        auto str = vector[i]["data"].get<std::string>();
         ustr.str_data.str_data_len = str.size() + 1;
         ustr.str_data.str_data_val = const_cast<char*>(str.c_str());
         data->set(ustr, i);
@@ -373,8 +373,8 @@ json set_property(const std::string &address, const json &data) {
  */
 json respond_magix(json request, const std::string &endpoint_name) {
   json payload = request["payload"];
-  std::string address = payload["eq_address"].get<std::string>();
-  std::string action = payload["action"].get<std::string>();
+  auto address = payload["eq_address"].get<std::string>();
+  auto action = payload["action"].get<std::string>();
   json data = payload["eq_data"];
   json responsePayload;
   if (action == "get") {
