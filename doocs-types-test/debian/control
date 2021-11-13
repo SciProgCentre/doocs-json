@@ -1,0 +1,13 @@
+Source: doocs-clean-template-server
+Section: devel
+Priority: optional
+Maintainer: Lars Froehlich <Lars.Froehlich@desy.de>
+Standards-Version: 4.1.4
+Build-Depends: dev-doocs-serverlib, debhelper-compat (= 12)
+
+Package: doocs-clean-template-server
+Section: net
+Architecture: any
+Depends: doocs-watchdog-server (>=4.0.30), ${shlibs:Depends}, ${misc:Depends}
+Description: DOOCS clean server template.
+ A clean template for a DOOCS server with only minimal functionality.
