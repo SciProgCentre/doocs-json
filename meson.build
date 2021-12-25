@@ -36,7 +36,7 @@ doocs_json_lib = static_library(
 doocs_json_dep = declare_dependency(include_directories : 'include',  link_with : doocs_json_lib)
 
 doocs_zmq_lib = static_library(
-  'doocs_zmq', ['src/doocs_json.cpp'],
+  'doocs_zmq', ['src/doocs_zmq.cpp'],
   include_directories : include_dir,
   dependencies : [
     doocsapi_dep,
@@ -50,42 +50,29 @@ doocs_zmq_dep = declare_dependency(include_directories : 'include',  link_with :
 
 zmq_exe = executable(
   'doocs_zmq_app',
-  ['src/doocs_json.cpp','src/doocs_zmq.cpp','src/doocs_zmq_app.cpp'],
+  'src/doocs_zmq_app.cpp',
   include_directories : include_dir,
   install : true,
-  dependencies : [
-    doocsapi_dep,
-    nlohmann_json_dep,
-    zmqpp_dep,
-    zmq_dep,
-   ]
+  dependencies : doocs_zmq_dep
 )
 
 json_exe = executable(
   'doocs_json_app',
-  [
-   'src/doocs_json.cpp',
-   'src/doocs_json_app.cpp',
-  ],
+  'src/doocs_json_app.cpp',
   include_directories : include_dir,
   install : true,
-  dependencies : [
-    doocsapi_dep,
-    nlohmann_json_dep,
-  ]
+  dependencies : doocs_json_dep
 )
 
 json_test = executable(
   'doocs_json_test',
   [
-   'src/doocs_json.cpp',
    'test/json_test_local.cpp',
    'test/json_test_remote.cpp',
   ],
   include_directories : include_dir,
   dependencies : [
-    doocsapi_dep,
-    nlohmann_json_dep,
+    doocs_json_dep,
     gtest_dep,
   ]
 )
