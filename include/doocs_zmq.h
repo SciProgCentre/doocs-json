@@ -9,7 +9,6 @@
 #include <zmqpp/zmqpp.hpp>
 
 struct ZmqConnection {
-  zmqpp::context context;
   zmqpp::socket sub_socket;
   zmqpp::socket push_socket;
 };
@@ -22,6 +21,6 @@ struct ZmqConnection {
  * @param pull_port magix host broadcast port
  * @return connection data
  */
-ZmqConnection connect_to_zmq(const std::string& host, int pub_port = 7781, int pull_port = 7782);
+ZmqConnection connect_to_zmq(const zmqpp::context& context, const std::string& host, int pub_port = 7781, int pull_port = 7782);
 
 #endif  // BUILDDIR_DOOCS_ZMQ_H

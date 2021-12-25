@@ -9,7 +9,8 @@ int main(int argc, char *argv[]) {
   }
   std::string host = argv[1];
 
-  auto connection = connect_to_zmq(host);
+  zmqpp::context context;
+  auto connection = connect_to_zmq(context, host);
 
   std::string request_string;
   while (true) {
