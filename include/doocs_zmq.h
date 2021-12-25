@@ -6,14 +6,22 @@
 #define BUILDDIR_DOOCS_ZMQ_H
 
 #include "doocs_json.h"
+#include <zmqpp/zmqpp.hpp>
+
+struct ZmqConnection {
+  zmqpp::context context;
+  zmqpp::socket sub_socket;
+  zmqpp::socket push_socket;
+};
 
 /**
  *
  * @param host the host address of the magix loop
  * @param active flag to be set flipped to finish the client loop
- * @param pub_port magix host subscription  port
+ * @param pub_port magix host subscription port
  * @param pull_port magix host broadcast port
+ * @return connection data
  */
-[[noreturn]] void start_zmq_magix_client(const std::string& host, int pub_port = 7781, int pull_port = 7782);
+ZmqConnection connect_to_zmq(const std::string& host, int pub_port = 7781, int pull_port = 7782);
 
 #endif  // BUILDDIR_DOOCS_ZMQ_H
