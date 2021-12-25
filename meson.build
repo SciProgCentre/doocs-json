@@ -24,21 +24,29 @@ zmqpp_dep = meson.get_compiler('cpp').find_library('libzmqpp')
 
 include_dir = include_directories('include')
 
-sources = ['src/doocs_json.cpp','src/doocs_zmq.cpp']
-
-
-lib = static_library(
-  'doocs_json', sources,
+doocs_json_lib = static_library(
+  'doocs_json', ['src/doocs_json.cpp'],
   include_directories : include_dir,
   dependencies : [
     doocsapi_dep, 
     nlohmann_json_dep,
-    zmqpp_dep,
-    zmq_dep,
-   ]
+  ]
 )
 
-doocs_json_dep = declare_dependency(include_directories : 'include',  link_with : lib)
+doocs_json_dep = declare_dependency(include_directories : 'include',  link_with : doocs_json_lib)
+
+doocs_zmq_lib = static_library(
+  'doocs_zmq', ['src/doocs_json.cpp'],
+  include_directories : include_dir,
+  dependencies : [
+    doocsapi_dep,
+    nlohmann_json_dep,
+    zmqpp_dep,
+    zmq_dep,
+  ]
+)
+
+doocs_zmq_dep = declare_dependency(include_directories : 'include',  link_with : [doocs_json_lib, doocs_zmq_lib])
 
 zmq_exe = executable(
   'doocs_zmq_app',
