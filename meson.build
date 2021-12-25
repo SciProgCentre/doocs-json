@@ -38,7 +38,7 @@ lib = static_library(
    ]
 )
 
-doocs_json_dep = declare_dependency(include_directories : include,  link_with : lib)
+doocs_json_dep = declare_dependency(include_directories : 'include',  link_with : lib)
 
 zmq_exe = executable(
   'doocs_zmq_app',
