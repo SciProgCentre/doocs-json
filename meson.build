@@ -33,11 +33,12 @@ lib = static_library(
   dependencies : [
     doocsapi_dep, 
     nlohmann_json_dep,
-#    rsocket_dep,
     zmqpp_dep,
     zmq_dep,
    ]
 )
+
+doocs_json_dep = declare_dependency(include_directories : include,  link_with : lib)
 
 zmq_exe = executable(
   'doocs_zmq_app',
