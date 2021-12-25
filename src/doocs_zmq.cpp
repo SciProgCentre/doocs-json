@@ -10,7 +10,7 @@
 
 using namespace std;
 
-void start_zmq_magix_client(const string &host, atomic_bool active, int pub_port, int pull_port) {
+[[noreturn]] void start_zmq_magix_client(const string &host, int pub_port, int pull_port) {
   // initialize the 0MQ context
   zmqpp::context context;
 
@@ -33,7 +33,7 @@ void start_zmq_magix_client(const string &host, atomic_bool active, int pub_port
   push_socket.connect(push_endpoint);
 
   string request_string;
-  while (active) {
+  while (true) {
     if (sub_socket.receive(request_string)) {
       nlohmann::json request = nlohmann::json::parse(request_string);
       if (request["origin"] == "doocs") {
