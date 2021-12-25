@@ -375,7 +375,10 @@ json respond_magix(json request, const std::string &endpoint_name) {
   json payload = request["payload"];
   auto address = payload["eq_address"].get<std::string>();
   auto action = payload["action"].get<std::string>();
-  json data = payload["eq_data"];
+  json data = payload["eq_data"].get<json>();
+  if (data == "") {
+    data = nullptr;
+  }
   json responsePayload;
   if (action == "get") {
     responsePayload = get_property(address, data);
@@ -386,6 +389,7 @@ json respond_magix(json request, const std::string &endpoint_name) {
   }
   json response;
 
+  response["format"] = "json";
   response["parentId"] = request["id"];
   response["target"] = request["origin"];
   response["origin"] = endpoint_name;

@@ -20,8 +20,7 @@ int main(int argc, char *argv[]) {
   if (cmd == "get") {
     std::cout << get_property(argv[2]) << std::endl;
   } else if (cmd == "set") {
-    std::cout << set_property(argv[2],
-                              nlohmann::json::parse(argv[3]))
+    std::cout << set_property(argv[2],nlohmann::json::parse(argv[3]))
               << std::endl;
   } else if (cmd == "names") {
     std::cout << list_names(argv[2]) << std::endl;
